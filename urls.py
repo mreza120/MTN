@@ -7,3 +7,4 @@ urlpatterns = [
     path('sites', views.index, name='')
 ]
 
+

@@ -16,7 +16,7 @@ def index(request):
     if x.isalpha():
         return HttpResponse("its not Valid")
     #Kerman IP Check
-    elif Province == 'Kerman':
+    elif Province == 'test':
         oo = pandas.read_excel('D:\Python\IPPLAN4.xlsx',sheet_name='2G')
         oo = oo.fillna('--')
         gf = oo[(oo['Sites'].str.contains(x))]
@@ -30,7 +30,7 @@ def index(request):
     if x == '*':
        return HttpResponse(oo.to_html()) 
 
-    elif Province == 'Ilam' :
+    elif Province == 'Kerman' :
         oo = pandas.read_excel('D:\Python\MTNi_Kerman_SBTS_IPDatafill_V.7.6(2020-05-17).xlsx',sheet_name='SBTS_IP_Datafill_Nokia_MW')
         gf = oo.groupby(oo['Sites'].str.contains(x))
         hf = oo.groupby(oo['Sites-TDD'].str.contains(x))
@@ -107,6 +107,7 @@ def index3(request):
 from django.shortcuts import render
 def index4(request):
         return render(request,"Home2.html")
+        
 
 
     
