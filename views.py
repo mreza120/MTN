@@ -236,8 +236,12 @@ def index(request):
             cf = list(gf)[1][1]
             final_df = pandas.DataFrame(data=None)
             for i in cf.index:
-                j = i - (i%33) +1
-                jj = oo.iloc[[j,j+1,i]]
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj])
         final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
@@ -263,9 +267,137 @@ def index(request):
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
             for i in cf:
-                j = i - (i%33) +1
-                jj = df.iloc[[j,j+1,i]]
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
+#### South-Khorasan IP Plan Check ####
+    elif Province == 'South-Khorasan' :
+        sheet_names = ['Birjand-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Jonoubi\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
+#### Khorasan-Razavi IP Plan Check ####
+    elif Province == 'Khorasan-Razavi' :
+        sheet_names = ['Razavi-IP', 'Razavi-DP-IP']
+        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Razavi\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]] 
+                final_df = pandas.concat([final_df , jj])
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
+#### North-Khorasan IP Plan Check ####
+    elif Province == 'North-Khorasan' :
+        sheet_names = ['Bojnourd-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Shomali\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+#### Mazandaran IP Plan Check ####
+    elif Province == 'Mazandaran' :
+        sheet_names = ['Mazandaran-IP-Plan', 'Mazandaran-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Mazandaran\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
