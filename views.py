@@ -217,6 +217,7 @@ def index(request):
     #         final_df = pandas.concat([final_df , jj])
     #     return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
+
 ############ Region 1&3 #################
 
  #### Gilan IP Plan Check ####
@@ -751,6 +752,97 @@ def index(request):
                 final_df = pandas.concat([final_df , jj])  
             final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+############ Region 7&8 ##################
+
+
+ #### Qom IP Plan Check ####
+    elif Province == 'Qom' :
+        sheet_names = ['Qom-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Qom\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Karaj IP Plan Check ####
+    elif Province == 'Alborz' :
+        sheet_names = ['Alborz-IPs', 'Alborz-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Karaj\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Semnan IP Plan Check ####
+    elif Province == 'Semnan' :
+        sheet_names = ['Semnan-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Semnan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
 
 
 #Test Index
