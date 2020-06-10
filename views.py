@@ -12,15 +12,15 @@ import numpy as np
 
 ############################ Main Index ####################################
 def index(request):
-#getting the information from user in HTML
+###getting the information from user in HTML###
     x = request.POST.get('sitename')
     Province = request.POST.get('province_name')
 
-#Check the input is not just Alpha
-    if x.isalpha():
-        return HttpResponse("its not Valid")
+ #Check the input is not just Alpha
+    if x.isalpha() or len(x) < 4 :
+        return HttpResponse("Site is not Valid")
 
-# test IP Plan Check
+ # test IP Plan Check
     elif Province == 'test':
 
         oo = pandas.read_excel('D:\Python\IPPLAN4.xlsx',sheet_name='2G')
@@ -36,8 +36,8 @@ def index(request):
     if x == '*':
        return HttpResponse(oo.to_html()) 
 
-
-### Kerman IP Plan Check ###
+############ Region 5&10 #################
+ ### Kerman IP Plan Check ###
     elif Province == 'Kerman' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -92,8 +92,7 @@ def index(request):
             
             return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
 
-
-### Yazd IP Plan check ###
+ ### Yazd IP Plan check ###
     elif Province == 'Yazd' :
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -150,7 +149,7 @@ def index(request):
 
 
 
-### Sistan IP Plan check ###    
+ ### Sistan IP Plan check ###    
     elif Province == 'Sistan' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -218,8 +217,9 @@ def index(request):
     #         final_df = pandas.concat([final_df , jj])
     #     return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
+############ Region 1&3 #################
 
-#### Gilan IP Plan Check ####
+ #### Gilan IP Plan Check ####
     elif Province == 'Gilan' :
         sheet_names = ['Gilan-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Gilan\*.xlsx') # * means all if need specific format then *.csv
@@ -248,7 +248,7 @@ def index(request):
 
 
 
-#### Golestan IP Plan Check ####
+ #### Golestan IP Plan Check ####
     elif Province == 'Golestan' :
         sheet_names = ['Golestan-IP-Plan', 'Golestan-IP-Plan-DPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Golestan\*.xlsx') # * means all if need specific format then *.csv
@@ -279,7 +279,7 @@ def index(request):
 
 
 
-#### South-Khorasan IP Plan Check ####
+ #### South-Khorasan IP Plan Check ####
     elif Province == 'South-Khorasan' :
         sheet_names = ['Birjand-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Jonoubi\*.xlsx') # * means all if need specific format then *.csv
@@ -310,7 +310,7 @@ def index(request):
 
 
 
-#### Khorasan-Razavi IP Plan Check ####
+ #### Khorasan-Razavi IP Plan Check ####
     elif Province == 'Khorasan-Razavi' :
         sheet_names = ['Razavi-IP', 'Razavi-DP-IP']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Razavi\*.xlsx') # * means all if need specific format then *.csv
@@ -341,7 +341,7 @@ def index(request):
 
 
 
-#### North-Khorasan IP Plan Check ####
+ #### North-Khorasan IP Plan Check ####
     elif Province == 'North-Khorasan' :
         sheet_names = ['Bojnourd-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Shomali\*.xlsx') # * means all if need specific format then *.csv
@@ -371,7 +371,7 @@ def index(request):
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
-#### Mazandaran IP Plan Check ####
+ #### Mazandaran IP Plan Check ####
     elif Province == 'Mazandaran' :
         sheet_names = ['Mazandaran-IP-Plan', 'Mazandaran-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Mazandaran\*.xlsx') # * means all if need specific format then *.csv
@@ -400,6 +400,357 @@ def index(request):
             final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
+
+############ Region 2&4 #################
+
+ #### Ardebil IP Plan Check ####
+    elif Province == 'Ardabil' :
+        sheet_names = ['Ardebil-IP-Plan', 'Ardebil-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ardebil\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### East-Azarbayejan IP Plan Check ####
+    elif Province == 'East-Azarbayejan' :
+        sheet_names = ['Tabriz-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\E.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Hamedan IP Plan Check ####
+    elif Province == 'Hamadan' :
+        sheet_names = ['Hamedan-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Hamedan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Ilam IP Plan Check ####
+    elif Province == 'Ilam' :
+        sheet_names = ['Ilam-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ilam\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Kermanshah IP Plan Check ####
+    elif Province == 'Kermanshah' :
+        sheet_names = ['Kermanshah-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Kermanshah IP Plan Check ####
+    elif Province == 'Kermanshah' :
+        sheet_names = ['Kermanshah-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Kordestan IP Plan Check ####
+    elif Province == 'Kurdistan' :
+        sheet_names = ['Sanandaj-IPs', 'Sanandaj-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kordestan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Lorestan IP Plan Check ####
+    elif Province == 'Lorestan' :
+        sheet_names = ['KhorramAbad-IPs', 'KhorramAbad-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Lorestan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Markazi IP Plan Check ####
+    elif Province == 'Markazi' :
+        sheet_names = ['Arak-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Markazi\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
+ #### Qazvin IP Plan Check ####
+    elif Province == 'Qazvin' :
+        sheet_names = ['Qazvin-IPs', 'Qazvin-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Qazvin\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### West_azarbayejan IP Plan Check ####
+    elif Province == 'West-Azarbayejan' :
+        sheet_names = ['Oroumieh-IPs', 'Oroumieh-DP-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\W.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### Zanjan IP Plan Check ####
+    elif Province == 'Zanjan' :
+        sheet_names = ['Zanjan-IPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Zanjan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
 #Test Index
