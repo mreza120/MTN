@@ -959,6 +959,124 @@ def index(request):
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
+ #### TE-OLD IP Plan Check ####
+ 
+    elif Province == 'TE-Ericsson-OLD' :
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        xls = pandas.ExcelFile(latest_file)
+        oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TE')
+        oo1 = pandas.read_excel(xls,sheet_name='Cluster-Iub-Mub TE')
+        oo2 = pandas.read_excel(xls,sheet_name='RBS S1X2-O&M TE')
+        oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']]
+        oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']]
+        oo2 = oo2[['Sites','IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
+        gf = oo.groupby(oo['Sites'].str.contains(x))
+        gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
+        gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf1 = list(gf)[1][1].index
+            cf2 = list(gf1)[1][1].index
+            cf3 = list(gf2)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            final_df1 = pandas.DataFrame(data=None)
+            final_df2 = pandas.DataFrame(data=None)
+            final_df3 = pandas.DataFrame(data=None)
+            for i in cf1:
+                f = (i%30)
+                j = i - f 
+                jj = oo.iloc[[j,i]]
+                final_df1 = pandas.concat([final_df1 , jj]) 
+            for i in cf2:
+                f = (i%30)
+                j = i - f 
+                jj = oo1.iloc[[j,i]]
+                final_df2 = pandas.concat([final_df2 , jj])     
+            for i in cf3:
+                f = (i%31)
+                j = i - f 
+                jj = oo2.iloc[[j,i]]
+                final_df3 = pandas.concat([final_df3 , jj])   
+            final_df1.reset_index(inplace=True)
+            final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']]
+
+            final_df2.reset_index(inplace=True)
+            final_df3.reset_index(inplace=True)
+            final_df [['3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']] = final_df2[['3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']]
+            final_df [['IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                    ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']] = final_df3[['IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                    ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
+
+    
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
+ #### TW-OLD IP Plan Check ####
+ 
+    elif Province == 'TW-Ericsson-OLD' :
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        xls = pandas.ExcelFile(latest_file)
+        oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TE')
+        oo1 = pandas.read_excel(xls,sheet_name='Cluster-Iub-Mub TE')
+        oo2 = pandas.read_excel(xls,sheet_name='RBS S1X2-O&M TE')
+        oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']]
+        oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']]
+        oo2 = oo2[['Sites','IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
+        gf = oo.groupby(oo['Sites'].str.contains(x))
+        gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
+        gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf1 = list(gf)[1][1].index
+            cf2 = list(gf1)[1][1].index
+            cf3 = list(gf2)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            final_df1 = pandas.DataFrame(data=None)
+            final_df2 = pandas.DataFrame(data=None)
+            final_df3 = pandas.DataFrame(data=None)
+            for i in cf1:
+                f = (i%30)
+                j = i - f 
+                jj = oo.iloc[[j,i]]
+                final_df1 = pandas.concat([final_df1 , jj]) 
+            for i in cf2:
+                f = (i%30)
+                j = i - f 
+                jj = oo1.iloc[[j,i]]
+                final_df2 = pandas.concat([final_df2 , jj])     
+            for i in cf3:
+                f = (i%31)
+                j = i - f 
+                jj = oo2.iloc[[j,i]]
+                final_df3 = pandas.concat([final_df3 , jj])   
+            final_df1.reset_index(inplace=True)
+            final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
+                'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']]
+
+            final_df2.reset_index(inplace=True)
+            final_df3.reset_index(inplace=True)
+            final_df [['3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']] = final_df2[['3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']]
+            final_df [['IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                    ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']] = final_df3[['IP Address (1800) LTE', 'LTE VLAN ID','IP Address (1800) LTE O&M', 'LTE O&M VLAN ID' ,'IP Address (2600)FDD' ,'FDD VLAN ID' 
+                    ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
+
+    
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+
 ############ Region 6&9 ##################
  ### Kohkiloye Va boyer Ahmad OLD ###
 
