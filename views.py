@@ -998,7 +998,7 @@ def index(request):
                 final_df2 = pandas.concat([final_df2 , jj])     
             for i in cf3:
                 f = (i%31)
-                j = i - f 
+                j = i - f +1
                 jj = oo2.iloc[[j,i]]
                 final_df3 = pandas.concat([final_df3 , jj])   
             final_df1.reset_index(inplace=True)
@@ -1015,7 +1015,65 @@ def index(request):
 
     
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+    
 
+ #### TE Huawei IP Plan Check ####
+
+    elif Province == 'TE-Huawei' :
+        sheet_names = ['Huawei-TE-DP' , 'TE-Sub']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### TE DPs IP Plan Check ####
+    elif Province == 'TE-DPs' :
+        sheet_names = ['TE-DP' , 'TE Ericsson DPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+2,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
  #### TW-OLD IP Plan Check ####
@@ -1024,9 +1082,9 @@ def index(request):
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         xls = pandas.ExcelFile(latest_file)
-        oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TE')
-        oo1 = pandas.read_excel(xls,sheet_name='Cluster-Iub-Mub TE')
-        oo2 = pandas.read_excel(xls,sheet_name='RBS S1X2-O&M TE')
+        oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TW')
+        oo1 = pandas.read_excel(xls,sheet_name='Cluster-Iub-Mub TW')
+        oo2 = pandas.read_excel(xls,sheet_name='RBS S1X2-O&M TW')
         oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
                 'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']]
         oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address', '3G O&M VLAN ID']]
@@ -1057,7 +1115,7 @@ def index(request):
                 final_df2 = pandas.concat([final_df2 , jj])     
             for i in cf3:
                 f = (i%31)
-                j = i - f 
+                j = i - f +1
                 jj = oo2.iloc[[j,i]]
                 final_df3 = pandas.concat([final_df3 , jj])   
             final_df1.reset_index(inplace=True)
@@ -1073,6 +1131,65 @@ def index(request):
                     ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
 
     
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+ 
+ #### TW DPs IP Plan Check ####
+    elif Province == 'TW-DPs' :
+        sheet_names = ['TW-DP' , 'TW Ericsson DPs']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+2,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ #### TE Huawei IP Plan Check ####
+
+    elif Province == 'TW-Huawei' :
+        sheet_names = ['Tehran-West (Huawei)']
+        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
