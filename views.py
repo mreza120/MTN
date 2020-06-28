@@ -120,6 +120,124 @@ def index(request):
             final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
+ ### Esfahan OLD ###
+
+    elif Province == 'Isfahan-Old' :
+        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        oo = pandas.read_excel(latest_file,sheet_name='Esfahan (2G)')
+        oo1 = pandas.read_excel(latest_file,sheet_name='Esfahan(3G)')
+        oo2 = pandas.read_excel(latest_file,sheet_name='Esfahan(LTE)')
+        oo3 = pandas.read_excel(latest_file,sheet_name='Esfahan LTE TDD')
+        oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']]
+        oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']]
+        oo2 = oo2[['Sites','LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+        oo3 = oo3[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+        gf = oo.groupby(oo['Sites'].str.contains(x))
+        gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
+        gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
+        gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf1 = list(gf)[1][1].index
+            cf2 = list(gf1)[1][1].index
+            cf3 = list(gf2)[1][1].index
+            cf4 = list(gf3)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            final_df1 = pandas.DataFrame(data=None)
+            final_df2 = pandas.DataFrame(data=None)
+            final_df3 = pandas.DataFrame(data=None)
+            final_df4 = pandas.DataFrame(data=None)
+            for i in cf1:
+                f = (i%30)
+                j = i - f 
+                jj = oo.iloc[[j,i]]
+                final_df1 = pandas.concat([final_df1 , jj]) 
+            for i in cf2:
+                f = (i%30)
+                j = i - f 
+                jj = oo1.iloc[[j,i]]
+                final_df2 = pandas.concat([final_df2 , jj])     
+            for i in cf3:
+                f = (i%30)
+                j = i - f 
+                jj = oo2.iloc[[j,i]]
+                final_df3 = pandas.concat([final_df3 , jj])  
+            for i in cf4:
+                f = (i%33)
+                j = i - f + 1
+                jj = oo3.iloc[[j,j+1,i]]
+                final_df4 = pandas.concat([final_df4 , jj]) 
+            final_df1.reset_index(inplace=True)
+            final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address',
+                        '2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node',
+                        '2G IP Address','2G VLAN ID','2G O&M IP Address',
+                        '2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']]
+            final_df2.reset_index(inplace=True)
+            final_df3.reset_index(inplace=True)
+            final_df4.reset_index(inplace=True)
+            final_df [['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']] = final_df2[['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']]
+            final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+            
+            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+ #### Esfahan DPs  ####
+    elif Province == 'Isfahan-DPs' :
+        sheet_names = ['Esfahan NEW PAO' , 'Ericsson Routers','Esfahan New DP']
+        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+2,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+ #### Hormozgan  ####
+    elif Province == 'Hormozgan' :
+        sheet_names = ['BandarAbbas-Old clusters' , 'B.Abbas New LTE','Bandar Abbas New POA' , 'Bandar Abbas U900' , 'Bandar Abbas New DP']
+        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Hormozgan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+2,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
  ### Yazd-Nokia IP Plans check ###
     elif Province == 'Yazd-Nokia' :
@@ -233,7 +351,6 @@ def index(request):
             final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
-
  ### Sistan-Nokia IP Plans check ###    
     elif Province == 'Sistan-Nokia' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
@@ -301,7 +418,6 @@ def index(request):
     #         jj = oo.iloc[[j,j+1,i]]
     #         final_df = pandas.concat([final_df , jj])
     #     return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
-
 
  #### Sistan-ZTE IP Plans Check ####
     elif Province == 'Sistan-ZTE' :
@@ -1193,8 +1309,8 @@ def index(request):
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
-
 ############ Region 6&9 ##################
+
  ### Kohkiloye Va boyer Ahmad OLD ###
 
     elif Province == 'Kohgiluyeh-Old' :
@@ -1275,8 +1391,217 @@ def index(request):
             final_df.fillna("" , inplace=True)
         return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
+ #### Bushehr DPs  ####
+    elif Province == 'Bushehr' :
+        sheet_names = ['Bushehr OLD clusters' , 'Bushehr TDD',' Bushehr New PAO', 'Bushsher New DP']
+        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Bushehr\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+2,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
+ ### Fars OLD ###
+
+    elif Province == 'Fars-Old' :
+        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        oo = pandas.read_excel(latest_file,sheet_name='Fars 2G')
+        oo1 = pandas.read_excel(latest_file,sheet_name='Fars(3G)')
+        oo2 = pandas.read_excel(latest_file,sheet_name='Fars(LTE)')
+        oo3 = pandas.read_excel(latest_file,sheet_name='Fars TDD')
+        oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']]
+        oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID' , 'U900' ,'U900 Vlan','U900 O&M','U900 O&M Vlan']]
+        oo2 = oo2[['Sites','LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+        oo3 = oo3[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+        gf = oo.groupby(oo['Sites'].str.contains(x))
+        gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
+        gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
+        gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf1 = list(gf)[1][1].index
+            cf2 = list(gf1)[1][1].index
+            cf3 = list(gf2)[1][1].index
+            cf4 = list(gf3)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            final_df1 = pandas.DataFrame(data=None)
+            final_df2 = pandas.DataFrame(data=None)
+            final_df3 = pandas.DataFrame(data=None)
+            final_df4 = pandas.DataFrame(data=None)
+            for i in cf1:
+                f = (i%30)
+                j = i - f 
+                jj = oo.iloc[[j,i]]
+                final_df1 = pandas.concat([final_df1 , jj]) 
+            for i in cf2:
+                f = (i%30)
+                j = i - f 
+                jj = oo1.iloc[[j,i]]
+                final_df2 = pandas.concat([final_df2 , jj])     
+            for i in cf3:
+                f = (i%30)
+                j = i - f 
+                jj = oo2.iloc[[j,i]]
+                final_df3 = pandas.concat([final_df3 , jj])  
+            for i in cf4:
+                f = (i%33)
+                j = i - f + 1 
+                jj = oo3.iloc[[j,i]]
+                final_df4 = pandas.concat([final_df4 , jj]) 
+            final_df1.reset_index(inplace=True)
+            final_df4.reset_index(inplace=True)
+            final_df2.reset_index(inplace=True)
+            final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address',
+                        '2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node',
+                        '2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']]
+            final_df [['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID', 'U900' ,'U900 Vlan','U900 O&M','U900 O&M Vlan']] = final_df2[['3G IP Address'
+                        ,'3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID', 'U900' ,'U900 Vlan','U900 O&M','U900 O&M Vlan']]
+            final_df3.reset_index(inplace=True)
+            final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+            final_df4.reset_index(inplace=True)
+            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+ ### Fars DPs ###
+    elif Province == 'Fars-DPs' :
+        sheet_names = ['Fars new PAO' , 'Fars New DP','Fars Ericsson DP']
+        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+
+ ### Ahwaz OLD ###
+
+    elif Province == 'Khuzestan-OLD' :
+        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        oo = pandas.read_excel(latest_file,sheet_name='Khozestan 2G')
+        oo1 = pandas.read_excel(latest_file,sheet_name='Khozestan(3G)')
+        oo2 = pandas.read_excel(latest_file,sheet_name='Khozestan(LTE)')
+        oo3 = pandas.read_excel(latest_file,sheet_name='Khozastan TDD')
+        oo = oo[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','Sync-IP-Address' , 'Sync-VLAN-ID']]
+        oo1 = oo1[['Sites','3G IP Address', '3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']]
+        oo2 = oo2[['Sites','LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+        oo3 = oo3[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+        gf = oo.groupby(oo['Sites'].str.contains(x))
+        gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
+        gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
+        gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf1 = list(gf)[1][1].index
+            cf2 = list(gf1)[1][1].index
+            cf3 = list(gf2)[1][1].index
+            cf4 = list(gf3)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            final_df1 = pandas.DataFrame(data=None)
+            final_df2 = pandas.DataFrame(data=None)
+            final_df3 = pandas.DataFrame(data=None)
+            final_df4 = pandas.DataFrame(data=None)
+            for i in cf1:
+                f = (i%30)
+                j = i - f 
+                jj = oo.iloc[[j,i]]
+                final_df1 = pandas.concat([final_df1 , jj]) 
+            for i in cf2:
+                f = (i%30)
+                j = i - f 
+                jj = oo1.iloc[[j,i]]
+                final_df2 = pandas.concat([final_df2 , jj])     
+            for i in cf3:
+                f = (i%30)
+                j = i - f 
+                jj = oo2.iloc[[j,i]]
+                final_df3 = pandas.concat([final_df3 , jj])  
+            for i in cf4:
+                f = (i%33)
+                j = i - f + 1 
+                jj = oo3.iloc[[j,i]]
+                final_df4 = pandas.concat([final_df4 , jj]) 
+            final_df1.reset_index(inplace=True)
+            final_df4.reset_index(inplace=True)
+            final_df2.reset_index(inplace=True)
+            final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address',
+                        '2G O&M VLAN Traffic','Sync-IP-Address' , 'Sync-VLAN-ID']] = final_df1[['Sites','Transmission node',
+                        '2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','Sync-IP-Address' , 'Sync-VLAN-ID']]
+            final_df [['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']] = final_df2[['3G IP Address'
+                        ,'3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']]
+            final_df3.reset_index(inplace=True)
+            final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
+            final_df4.reset_index(inplace=True)
+            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+
+ ### Ahwaz DPs ###
+    elif Province == 'Khuzestan-DPs' :
+        sheet_names = ['Ahvaz New PAO' , 'Khozestan new DP','Ericsson Routers']
+        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj])  
+            final_df.fillna("" , inplace=True)
+        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
 
 
 #Test Index
