@@ -1,43 +1,29 @@
 from django.shortcuts import render , redirect
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse , HttpResponseRedirect
 import pandas
 import glob
 import os
 import numpy as np
+from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth.decorators import login_required
 
-
-# Create your views here.
-
-
-############################ Main Index ####################################
-def index(request):
-###getting the information from user in HTML###
+############################ Main Index for Ip plan shows ####################################
+@login_required
+def showTcodeTables(request):
+ ###getting the information from user in HTML###
     x = request.POST.get('sitename')
     Province = request.POST.get('province_name')
 
  #Check the input is not just Alpha
     if x.isalpha() or len(x) < 4 :
-        return HttpResponse("Site is not Valid")
+        return render(request,"pagenotfound.html")
 
- # test IP Plan Check
-    elif Province == 'test':
 
-        oo = pandas.read_excel('D:\Python\IPPLAN4.xlsx',sheet_name='2G')
-        oo = oo.fillna('--')
-        gf = oo[(oo['Sites'].str.contains(x))]
-        gf = gf[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-        hf = oo[(oo['Sites.1'].str.contains(x))]
-        hf = hf[['Sites.1','LTE-TDD' ,'LTE-TDD(O&M)']]
-        kk =  pandas.concat([gf,hf])
-        return HttpResponse(kk.to_html())
-        # return HttpResponse(gf.to_html())
 
-    if x == '*':
-       return HttpResponse(oo.to_html()) 
 
-############ Region 5&10 #################
- ### Kerman-Nokia IP Plans Check ###
+ ############ Region 5&10 #################
+  ### Kerman-Nokia IP Plans Check ###
     elif Province == 'Kerman-Nokia' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -55,9 +41,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
@@ -66,9 +56,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
+        table = final_df2.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
@@ -80,18 +74,22 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             for i in cf2.index:
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
-            final_df3 = pandas.concat([final_df , final_df2])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
+            final_df3 = pandas.concat([final_df , final_df2],sort=False)
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
             
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
+        table = final_df3.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- #### Kerman-ZTE IP Plans Check ####
+  #### Kerman-ZTE IP Plans Check ####
     elif Province == 'Kerman-ZTE' :
         sheet_names = ['ZTE-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
@@ -99,7 +97,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -116,11 +114,15 @@ def index(request):
                 else:
                     jj = df.iloc[[j,j+1,i]]
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Esfahan OLD ###
+  ### Esfahan OLD ###
 
     elif Province == 'Isfahan-Old' :
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
@@ -153,22 +155,22 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%30)
                 j = i - f 
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])  
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)  
             for i in cf4:
                 f = (i%33)
                 j = i - f + 1
                 jj = oo3.iloc[[j,j+1,i]]
-                final_df4 = pandas.concat([final_df4 , jj]) 
+                final_df4 = pandas.concat([final_df4 , jj],sort=False) 
             final_df1.reset_index(inplace=True)
             final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address',
                         '2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node',
@@ -179,11 +181,15 @@ def index(request):
             final_df4.reset_index(inplace=True)
             final_df [['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']] = final_df2[['3G IP Address','3G VLAN ID','3G O&M IP Address' ,'3G O&M VLAN ID']]
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
-            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
+            final_df [['Sites-TDD',
             
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- #### Esfahan DPs  ####
+  #### Esfahan DPs  ####
     elif Province == 'Isfahan-DPs' :
         sheet_names = ['Esfahan NEW PAO' , 'Ericsson Routers','Esfahan New DP']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
@@ -191,7 +197,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -207,11 +213,15 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- #### Hormozgan  ####
+  #### Hormozgan  ####
     elif Province == 'Hormozgan' :
         sheet_names = ['BandarAbbas-Old clusters' , 'B.Abbas New LTE','Bandar Abbas New POA' , 'Bandar Abbas U900' , 'Bandar Abbas New DP']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Hormozgan\*.xlsx') # * means all if need specific format then *.csv
@@ -219,7 +229,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -235,11 +245,15 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Yazd-Nokia IP Plans check ###
+  ### Yazd-Nokia IP Plans check ###
     elif Province == 'Yazd-Nokia' :
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -257,9 +271,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
@@ -268,9 +286,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
+        table = final_df2.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
@@ -282,19 +304,23 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             for i in cf2.index:
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
-            final_df3 = pandas.concat([final_df , final_df2])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
+            final_df3 = pandas.concat([final_df , final_df2],sort=False)
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
             # final_df3 = final_df3.drop('Hubsite')
             
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
+        table = final_df3.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- #### Yazd-ZTE IP Plans Check ####
+  #### Yazd-ZTE IP Plans Check ####
     elif Province == 'Yazd-ZTE' :
         sheet_names = ['ZTE-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
@@ -302,7 +328,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -319,11 +345,15 @@ def index(request):
                 else:
                     jj = df.iloc[[j,j+1,i]]
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Shahrekord ###
+  ### Shahrekord ###
     elif Province == 'Chahar-Mahaal' :
         sheet_names = ['Shahrekord OLD' , 'Shahrekord NEW PAO']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Chahar Mahal Bakhtiari\*.xlsx') # * means all if need specific format then *.csv
@@ -331,7 +361,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -347,11 +377,15 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Sistan-Nokia IP Plans check ###    
+  ### Sistan-Nokia IP Plans check ###    
     elif Province == 'Sistan-Nokia' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
@@ -369,9 +403,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
@@ -380,9 +418,13 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
+        table = final_df2.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
@@ -394,17 +436,21 @@ def index(request):
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             for i in cf2.index:
                 j = i - (i%33) +1
                 jj = oo.iloc[[j,j+1,i]]
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
-                final_df2 = pandas.concat([final_df2 , jj])
-            final_df3 = pandas.concat([final_df , final_df2])
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)
+            final_df3 = pandas.concat([final_df , final_df2],sort=False)
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
             # final_df3 = final_df3.drop('Hubsite')
             
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
+        table = final_df3.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
     
     # else:
@@ -416,10 +462,10 @@ def index(request):
     #     for i in cf.index:
     #         j = i - (i%33) +1
     #         jj = oo.iloc[[j,j+1,i]]
-    #         final_df = pandas.concat([final_df , jj])
-    #     return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+    #         final_df = pandas.concat([final_df , jj],sort=False)
+    #     return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
 
- #### Sistan-ZTE IP Plans Check ####
+  #### Sistan-ZTE IP Plans Check ####
     elif Province == 'Sistan-ZTE' :
         sheet_names = ['ZTE-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
@@ -427,7 +473,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -444,14 +490,18 @@ def index(request):
                 else:
                     jj = df.iloc[[j,j+1,i]]
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
-############ Region 1&3 #################
+ ############ Region 1&3 #################
 
- #### Gilan IP Plan Check ####
+  #### Gilan IP Plan Check ####
     elif Province == 'Gilan' :
         sheet_names = ['Gilan-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Gilan\*.xlsx') # * means all if need specific format then *.csv
@@ -460,7 +510,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo])
+            df = pandas.concat([df,oo],sort=False)
         gf = oo.groupby(oo['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
             return HttpResponse(" Site is not Valid!!!")
@@ -474,13 +524,17 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
         final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
 
- #### Golestan IP Plan Check ####
+  #### Golestan IP Plan Check ####
     elif Province == 'Golestan' :
         sheet_names = ['Golestan-IP-Plan', 'Golestan-IP-Plan-DPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Golestan\*.xlsx') # * means all if need specific format then *.csv
@@ -489,7 +543,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -505,13 +559,17 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
 
- #### South-Khorasan IP Plan Check ####
+  #### South-Khorasan IP Plan Check ####
     elif Province == 'South-Khorasan' :
         sheet_names = ['Birjand-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Jonoubi\*.xlsx') # * means all if need specific format then *.csv
@@ -520,7 +578,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -536,13 +594,17 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
 
- #### Khorasan-Razavi IP Plan Check ####
+  #### Khorasan-Razavi IP Plan Check ####
     elif Province == 'Khorasan-Razavi' :
         sheet_names = ['Razavi-IP', 'Razavi-DP-IP']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Razavi\*.xlsx') # * means all if need specific format then *.csv
@@ -551,7 +613,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -567,13 +629,17 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]] 
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
 
- #### North-Khorasan IP Plan Check ####
+  #### North-Khorasan IP Plan Check ####
     elif Province == 'North-Khorasan' :
         sheet_names = ['Bojnourd-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Shomali\*.xlsx') # * means all if need specific format then *.csv
@@ -582,7 +648,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -598,12 +664,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])
+                final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Mazandaran IP Plan Check ####
+  #### Mazandaran IP Plan Check ####
     elif Province == 'Mazandaran' :
         sheet_names = ['Mazandaran-IP-Plan', 'Mazandaran-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Mazandaran\*.xlsx') # * means all if need specific format then *.csv
@@ -612,7 +682,7 @@ def index(request):
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -628,26 +698,30 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
-############ Region 2&4 #################
+ ############ Region 2&4 #################
 
- #### Ardebil IP Plan Check ####
+  #### Ardebil IP Plan Check ####
     elif Province == 'Ardabil' :
-        sheet_names = ['Ardebil-IP-Plan', 'Ardebil-DP-IPs']
+        sheet_names = ['Ardebil-IP-Plan' , 'Ardebil-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ardebil\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
-    #Check whete the Site is Valid or not
+    ##Check wheter the Site is Valid or not
         if len(list(gf)) == 1 :
             return HttpResponse(" Site is not Valid!!!")
         else:
@@ -660,12 +734,18 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        # pandas.set_option('colheader_justify', 'center') 
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### East-Azarbayejan IP Plan Check ####
+
+  #### East-Azarbayejan IP Plan Check ####
     elif Province == 'East-Azarbayejan' :
         sheet_names = ['Tabriz-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\E.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
@@ -673,7 +753,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -689,12 +769,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Hamedan IP Plan Check ####
+  #### Hamedan IP Plan Check ####
     elif Province == 'Hamadan' :
         sheet_names = ['Hamedan-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Hamedan\*.xlsx') # * means all if need specific format then *.csv
@@ -702,7 +786,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -718,12 +802,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Ilam IP Plan Check ####
+  #### Ilam IP Plan Check ####
     elif Province == 'Ilam' :
         sheet_names = ['Ilam-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ilam\*.xlsx') # * means all if need specific format then *.csv
@@ -731,7 +819,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -747,12 +835,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Kermanshah IP Plan Check ####
+  #### Kermanshah IP Plan Check ####
     elif Province == 'Kermanshah' :
         sheet_names = ['Kermanshah-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
@@ -760,7 +852,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -776,12 +868,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Kermanshah IP Plan Check ####
+  #### Kermanshah IP Plan Check ####
     elif Province == 'Kermanshah' :
         sheet_names = ['Kermanshah-IP-Plan']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
@@ -789,7 +885,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -805,12 +901,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Kordestan IP Plan Check ####
+  #### Kordestan IP Plan Check ####
     elif Province == 'Kurdistan' :
         sheet_names = ['Sanandaj-IPs', 'Sanandaj-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kordestan\*.xlsx') # * means all if need specific format then *.csv
@@ -818,7 +918,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -834,12 +934,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Lorestan IP Plan Check ####
+  #### Lorestan IP Plan Check ####
     elif Province == 'Lorestan' :
         sheet_names = ['KhorramAbad-IPs', 'KhorramAbad-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Lorestan\*.xlsx') # * means all if need specific format then *.csv
@@ -847,7 +951,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -863,12 +967,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Markazi IP Plan Check ####
+  #### Markazi IP Plan Check ####
     elif Province == 'Markazi' :
         sheet_names = ['Arak-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Markazi\*.xlsx') # * means all if need specific format then *.csv
@@ -876,7 +984,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -892,13 +1000,17 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
 
- #### Qazvin IP Plan Check ####
+  #### Qazvin IP Plan Check ####
     elif Province == 'Qazvin' :
         sheet_names = ['Qazvin-IPs', 'Qazvin-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Qazvin\*.xlsx') # * means all if need specific format then *.csv
@@ -906,11 +1018,11 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
-        if len(list(gf)) == 1 :
+        if len(list(gf)) == 100 :
             return HttpResponse(" Site is not Valid!!!")
         else:
             cf = list(gf)[1][1].index
@@ -922,12 +1034,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### West_azarbayejan IP Plan Check ####
+  #### West_azarbayejan IP Plan Check ####
     elif Province == 'West-Azarbayejan' :
         sheet_names = ['Oroumieh-IPs', 'Oroumieh-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\W.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
@@ -935,7 +1051,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -951,12 +1067,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Zanjan IP Plan Check ####
+  #### Zanjan IP Plan Check ####
     elif Province == 'Zanjan' :
         sheet_names = ['Zanjan-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Zanjan\*.xlsx') # * means all if need specific format then *.csv
@@ -964,7 +1084,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -980,15 +1100,19 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
-############ Region 7&8 ##################
+ ############ Region 7&8 ################## 
 
 
- #### Qom IP Plan Check ####
+  #### Qom IP Plan Check ####
     elif Province == 'Qom' :
         sheet_names = ['Qom-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Qom\*.xlsx') # * means all if need specific format then *.csv
@@ -996,7 +1120,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1012,12 +1136,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Karaj IP Plan Check ####
+  #### Karaj IP Plan Check ####
     elif Province == 'Alborz' :
         sheet_names = ['Alborz-IPs', 'Alborz-DP-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Karaj\*.xlsx') # * means all if need specific format then *.csv
@@ -1025,7 +1153,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1041,12 +1169,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### Semnan IP Plan Check ####
+  #### Semnan IP Plan Check ####
     elif Province == 'Semnan' :
         sheet_names = ['Semnan-IPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Semnan\*.xlsx') # * means all if need specific format then *.csv
@@ -1054,7 +1186,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check wheter the Site is Valid or not
@@ -1070,12 +1202,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### TE-OLD IP Plan Check ####
+  #### TE-OLD IP Plan Check ####
  
     elif Province == 'TE-Ericsson-OLD' :
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
@@ -1106,17 +1242,17 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%31)
                 j = i - f +1
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])   
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)   
             final_df1.reset_index(inplace=True)
             final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
                 'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
@@ -1130,10 +1266,14 @@ def index(request):
                     ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
 
     
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
     
 
- #### TE Huawei IP Plan Check ####
+  #### TE Huawei IP Plan Check ####
 
     elif Province == 'TE-Huawei' :
         sheet_names = ['Huawei-TE-DP' , 'TE-Sub']
@@ -1142,7 +1282,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1158,12 +1298,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### TE DPs IP Plan Check ####
+  #### TE DPs IP Plan Check ####
     elif Province == 'TE-DPs' :
         sheet_names = ['TE-DP' , 'TE Ericsson DPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
@@ -1171,7 +1315,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1187,12 +1331,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### TW-OLD IP Plan Check ####
+  #### TW-OLD IP Plan Check ####
  
     elif Province == 'TW-Ericsson-OLD' :
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
@@ -1223,17 +1371,17 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%31)
                 j = i - f +1
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])   
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)   
             final_df1.reset_index(inplace=True)
             final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
                 'DCN VLAN ID','NTP IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address','2G O&M VLAN Traffic','DCN IP Address' ,
@@ -1247,10 +1395,14 @@ def index(request):
                     ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
 
     
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
  
- #### TW DPs IP Plan Check ####
+  #### TW DPs IP Plan Check ####
     elif Province == 'TW-DPs' :
         sheet_names = ['TW-DP' , 'TW Ericsson DPs']
         list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
@@ -1258,7 +1410,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1274,12 +1426,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- #### TE Huawei IP Plan Check ####
+  #### TE Huawei IP Plan Check ####
 
     elif Province == 'TW-Huawei' :
         sheet_names = ['Tehran-West (Huawei)']
@@ -1288,7 +1444,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1304,14 +1460,18 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
-############ Region 6&9 ##################
+ ############ Region 6&9 ##################
 
- ### Kohkiloye Va boyer Ahmad OLD ###
+  ### Kohkiloye Va boyer Ahmad OLD ###
 
     elif Province == 'Kohgiluyeh-Old' :
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
@@ -1339,17 +1499,17 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%30)
                 j = i - f 
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])   
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)   
             final_df1.reset_index(inplace=True)
             final_df [['Sites','Transmission node','2G IP Address','2G VLAN ID','2G O&M IP Address',
                         '2G O&M VLAN Traffic','Sync IP Address' , 'Sync VLAN ID']] = final_df1[['Sites','Transmission node',
@@ -1361,9 +1521,13 @@ def index(request):
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
 
             
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Kohkiloye Va boyer Ahmad New ###
+  ### Kohkiloye Va boyer Ahmad New ###
     elif Province == 'Kohgiluyeh-new' :
         sheet_names = ['Yasouj New POA']
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
@@ -1371,7 +1535,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1387,11 +1551,15 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- #### Bushehr DPs  ####
+  #### Bushehr DPs  ####
     elif Province == 'Bushehr' :
         sheet_names = ['Bushehr OLD clusters' , 'Bushehr TDD',' Bushehr New PAO', 'Bushsher New DP']
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Bushehr\*.xlsx') # * means all if need specific format then *.csv
@@ -1399,7 +1567,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1415,12 +1583,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+2,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- ### Fars OLD ###
+  ### Fars OLD ###
 
     elif Province == 'Fars-Old' :
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
@@ -1453,22 +1625,22 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%30)
                 j = i - f 
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])  
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)  
             for i in cf4:
                 f = (i%33)
                 j = i - f + 1 
                 jj = oo3.iloc[[j,i]]
-                final_df4 = pandas.concat([final_df4 , jj]) 
+                final_df4 = pandas.concat([final_df4 , jj],sort=False) 
             final_df1.reset_index(inplace=True)
             final_df4.reset_index(inplace=True)
             final_df2.reset_index(inplace=True)
@@ -1480,10 +1652,14 @@ def index(request):
             final_df3.reset_index(inplace=True)
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
             final_df4.reset_index(inplace=True)
-            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+            final_df [['Sites-TDD',
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Fars DPs ###
+  ### Fars DPs ###
     elif Province == 'Fars-DPs' :
         sheet_names = ['Fars new PAO' , 'Fars New DP','Fars Ericsson DP']
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
@@ -1491,7 +1667,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1507,12 +1683,16 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
 
- ### Ahwaz OLD ###
+  ### Ahwaz OLD ###
 
     elif Province == 'Khuzestan-OLD' :
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
@@ -1545,22 +1725,22 @@ def index(request):
                 f = (i%30)
                 j = i - f 
                 jj = oo.iloc[[j,i]]
-                final_df1 = pandas.concat([final_df1 , jj]) 
+                final_df1 = pandas.concat([final_df1 , jj],sort=False) 
             for i in cf2:
                 f = (i%30)
                 j = i - f 
                 jj = oo1.iloc[[j,i]]
-                final_df2 = pandas.concat([final_df2 , jj])     
+                final_df2 = pandas.concat([final_df2 , jj],sort=False)     
             for i in cf3:
                 f = (i%30)
                 j = i - f 
                 jj = oo2.iloc[[j,i]]
-                final_df3 = pandas.concat([final_df3 , jj])  
+                final_df3 = pandas.concat([final_df3 , jj],sort=False)  
             for i in cf4:
                 f = (i%33)
                 j = i - f + 1 
                 jj = oo3.iloc[[j,i]]
-                final_df4 = pandas.concat([final_df4 , jj]) 
+                final_df4 = pandas.concat([final_df4 , jj],sort=False) 
             final_df1.reset_index(inplace=True)
             final_df4.reset_index(inplace=True)
             final_df2.reset_index(inplace=True)
@@ -1572,10 +1752,14 @@ def index(request):
             final_df3.reset_index(inplace=True)
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
             final_df4.reset_index(inplace=True)
-            final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
-            return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+            final_df [['Sites-TDD',
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
 
- ### Ahwaz DPs ###
+  ### Ahwaz DPs ###
     elif Province == 'Khuzestan-DPs' :
         sheet_names = ['Ahvaz New PAO' , 'Khozestan new DP','Ericsson Routers']
         list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
@@ -1583,7 +1767,7 @@ def index(request):
         df = pandas.DataFrame()
         for sheet in sheet_names:
             oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
@@ -1599,9 +1783,30 @@ def index(request):
                     continue
                 else:
                     jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj])  
+                final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False,justify='center',col_space='150'))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+         }
+        return render(request, "Showtable.html" , context)
+
+
+# test IP Plan Check
+    elif Province == 'test':
+
+        oo = pandas.read_excel('D:\Python\IPPLAN4.xlsx',sheet_name='2G')
+        oo = oo.fillna('--')
+        gf = oo[(oo['Sites'].str.contains(x))]
+        gf = gf[['Sites','O&M' ,'Iub','Abis', 'LTE']]
+        hf = oo[(oo['Sites.1'].str.contains(x))]
+        hf = hf[['Sites.1','LTE-TDD' ,'LTE-TDD(O&M)']]
+        kk =  pandas.concat([gf,hf],sort=False)
+        return HttpResponse(kk.to_html())
+        # return HttpResponse(gf.to_html())
+
+    if x == '*':
+       return HttpResponse(oo.to_html()) 
 
 
 #Test Index
@@ -1611,16 +1816,92 @@ def index3(request):
     df = pandas.DataFrame()
     for i in list_sheetha:
         oo = pandas.read_excel('D:\Python\IPPLAN2.xlsx',sheet_name=i)
-        df = pandas.concat([df,oo])
+        df = pandas.concat([df,oo],sort=False)
     return HttpResponse(df.to_html())
 
 
 #1st Page HTML
-def index4(request):
-        return render(request,"Home2.html")
+def Loginpage(request):
+    # next_url = request.GET.get('next') >
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # Successful login
+            login(request, user)
+            # return render(request, 'index4.html')
+            return HttpResponseRedirect("http://10.131.57.172/viewsites/query")
+        else:
+            # undefined user or wrong password
+                return render(request,"pagenotfound.html")
+    else:
+        context = {}
+    return render(request, "index3.html", context)
         
 
-
+#Show Tcode Search page
+def SearchPage(request):
+        return render(request,"SiteSearch.html")
     
+
+#check the user groups
+def is_in_multiple_groups(user):
+    return user.groups.filter(name__in=['group1', 'group2']).exists()
+
+    """ 
+    from django.contrib.auth.decorators import login_required, user_passes_test
+    @login_required
+    @user_passes_test(is_member) # or @user_passes_test(is_in_multiple_groups)
+    def myview(request):
+    # Do your processing
+
+    """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
