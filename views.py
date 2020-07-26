@@ -43,7 +43,11 @@ def showTcodeTables(request):
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
     # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
@@ -54,7 +58,11 @@ def showTcodeTables(request):
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
                 final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
+            table = final_df2.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
     # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
@@ -75,7 +83,11 @@ def showTcodeTables(request):
             final_df3 = pandas.concat([final_df , final_df2],sort=False)
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
             
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
+            table = final_df3.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Kerman-ZTE IP Plans Check ####
     elif Province == 'Kerman-ZTE' :
@@ -104,7 +116,11 @@ def showTcodeTables(request):
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+        }
+        return render(request, "Showtable.html" , context)
 
   ### Esfahan OLD ###
 
@@ -167,7 +183,11 @@ def showTcodeTables(request):
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
             final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
             
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Esfahan DPs  ####
     elif Province == 'Isfahan-DPs' :
@@ -195,7 +215,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+        }
+        return render(request, "Showtable.html" , context)
 
   #### Hormozgan  ####
     elif Province == 'Hormozgan' :
@@ -223,7 +247,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+        }
+        return render(request, "Showtable.html" , context)
 
   ### Yazd-Nokia IP Plans check ###
     elif Province == 'Yazd-Nokia' :
@@ -245,7 +273,11 @@ def showTcodeTables(request):
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
     # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
@@ -256,8 +288,12 @@ def showTcodeTables(request):
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
                 final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
-    # For the sites which have both normal and TDD traffic
+            table = final_df2.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)    
+        # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
             cf2 = list(hf)[1][1]
@@ -276,10 +312,13 @@ def showTcodeTables(request):
                 final_df2 = pandas.concat([final_df2 , jj],sort=False)
             final_df3 = pandas.concat([final_df , final_df2],sort=False)
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
-            # final_df3 = final_df3.drop('Hubsite')
-            
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
 
+            
+            table = final_df3.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   #### Yazd-ZTE IP Plans Check ####
     elif Province == 'Yazd-ZTE' :
         sheet_names = ['ZTE-IPs']
@@ -307,8 +346,11 @@ def showTcodeTables(request):
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   ### Shahrekord ###
     elif Province == 'Chahar-Mahaal' :
         sheet_names = ['Shahrekord OLD' , 'Shahrekord NEW PAO']
@@ -335,8 +377,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   ### Sistan-Nokia IP Plans check ###    
     elif Province == 'Sistan-Nokia' :     
         list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
@@ -357,8 +402,11 @@ def showTcodeTables(request):
                 jj = jj[['Sites','O&M' ,'Iub','Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)
                 final_df.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-    # For sites which just have TDD traffic
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)    # For sites which just have TDD traffic
         elif len(list(gf)) == 1:
             cf2 = list(hf)[1][1]
             final_df2 = pandas.DataFrame(data=None)
@@ -368,8 +416,11 @@ def showTcodeTables(request):
                 jj = jj[['Sites-TDD','LTE-TDD' ,'LTE-TDD(O&M)']]
                 final_df2 = pandas.concat([final_df2 , jj],sort=False)
                 final_df2.replace(to_replace = np.nan, value ="" , inplace=True) 
-            return HttpResponse(final_df2.to_html(index=False,justify='center',col_space='150'))
-    # For the sites which have both normal and TDD traffic
+            table = final_df2.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)    # For the sites which have both normal and TDD traffic
         else: 
             cf = list(gf)[1][1]
             cf2 = list(hf)[1][1]
@@ -390,8 +441,11 @@ def showTcodeTables(request):
             final_df3.replace(to_replace = np.nan, value ="" , inplace=True) 
             # final_df3 = final_df3.drop('Hubsite')
             
-            return HttpResponse(final_df3.to_html(index=False,justify='center',col_space='150'))
-
+            table = final_df3.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
     
     # else:
     #     # of = oo[(oo['Sites'] == "GW") | (oo['Sites'].str.contains(x))]
@@ -432,8 +486,11 @@ def showTcodeTables(request):
                     jj = jj[['Sites','O&M' ,'Iub', 'Abis', 'LTE']]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
  ############ Region 1&3 #################
 
@@ -462,8 +519,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)
         final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+        table = final_df.to_html(index=False ,classes="responstable")
+        context = {
+        'table': table
+        }
+        return render(request, "Showtable.html" , context)
 
 
   #### Golestan IP Plan Check ####
@@ -493,8 +553,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 
   #### South-Khorasan IP Plan Check ####
@@ -524,8 +587,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 
   #### Khorasan-Razavi IP Plan Check ####
@@ -555,8 +621,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]] 
                 final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 
   #### North-Khorasan IP Plan Check ####
@@ -586,8 +655,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Mazandaran IP Plan Check ####
     elif Province == 'Mazandaran' :
@@ -616,8 +688,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
  ############ Region 2&4 #################
 
@@ -649,8 +724,11 @@ def showTcodeTables(request):
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
         # pandas.set_option('colheader_justify', 'center') 
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 
   #### East-Azarbayejan IP Plan Check ####
@@ -679,8 +757,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Hamedan IP Plan Check ####
     elif Province == 'Hamadan' :
@@ -708,8 +789,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Ilam IP Plan Check ####
     elif Province == 'Ilam' :
@@ -737,37 +821,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
-
-  #### Kermanshah IP Plan Check ####
-    elif Province == 'Kermanshah' :
-        sheet_names = ['Kermanshah-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
-        latest_file = max(list_of_files, key=os.path.getmtime)
-        df = pandas.DataFrame()
-        for sheet in sheet_names:
-            oo = pandas.read_excel(latest_file,sheet_name=sheet)
-            df = pandas.concat([df,oo],ignore_index=True,sort=False)
-
-        gf = df.groupby(df['Sites'].str.contains(x))
-    #Check whete the Site is Valid or not
-        if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
-        else:
-            cf = list(gf)[1][1].index
-            final_df = pandas.DataFrame(data=None)
-            for i in cf:
-                f = (i%33)
-                j = i - f +1
-                if f <= 3:
-                    continue
-                else:
-                    jj = df.iloc[[j,j+1,i]]
-                final_df = pandas.concat([final_df , jj],sort=False)  
-            final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Kermanshah IP Plan Check ####
     elif Province == 'Kermanshah' :
@@ -795,8 +853,43 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
+  #### Kermanshah IP Plan Check ####
+    elif Province == 'Kermanshah' :
+        sheet_names = ['Kermanshah-IP-Plan']
+        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        df = pandas.DataFrame()
+        for sheet in sheet_names:
+            oo = pandas.read_excel(latest_file,sheet_name=sheet)
+            df = pandas.concat([df,oo],ignore_index=True,sort=False)
+
+        gf = df.groupby(df['Sites'].str.contains(x))
+    #Check whete the Site is Valid or not
+        if len(list(gf)) == 1 :
+            return HttpResponse(" Site is not Valid!!!")
+        else:
+            cf = list(gf)[1][1].index
+            final_df = pandas.DataFrame(data=None)
+            for i in cf:
+                f = (i%33)
+                j = i - f +1
+                if f <= 3:
+                    continue
+                else:
+                    jj = df.iloc[[j,j+1,i]]
+                final_df = pandas.concat([final_df , jj],sort=False)  
+            final_df.fillna("" , inplace=True)
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Kordestan IP Plan Check ####
     elif Province == 'Kurdistan' :
@@ -824,8 +917,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Lorestan IP Plan Check ####
     elif Province == 'Lorestan' :
@@ -853,8 +949,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Markazi IP Plan Check ####
     elif Province == 'Markazi' :
@@ -882,8 +981,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 
   #### Qazvin IP Plan Check ####
@@ -912,8 +1014,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### West_azarbayejan IP Plan Check ####
     elif Province == 'West-Azarbayejan' :
@@ -941,8 +1046,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Zanjan IP Plan Check ####
     elif Province == 'Zanjan' :
@@ -970,8 +1078,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
  ############ Region 7&8 ################## 
 
@@ -1002,8 +1113,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### Karaj IP Plan Check ####
     elif Province == 'Alborz' :
@@ -1064,8 +1178,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### TE-OLD IP Plan Check ####
  
@@ -1122,8 +1239,11 @@ def showTcodeTables(request):
                     ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
 
     
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-    
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)    
 
   #### TE Huawei IP Plan Check ####
 
@@ -1152,8 +1272,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### TE DPs IP Plan Check ####
     elif Province == 'TE-DPs' :
@@ -1181,8 +1304,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### TW-OLD IP Plan Check ####
  
@@ -1239,8 +1365,11 @@ def showTcodeTables(request):
                     ,'IP Address FDD (2600) O&M' , 'FDD O&M VLAN ID','IP Address (3500)TDD', 'TDD VLAN ID' ,'IP Address TDD (3500) O&M' ,'TDD O&M VLAN ID']]
 
     
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
  
   #### TW DPs IP Plan Check ####
     elif Province == 'TW-DPs' :
@@ -1268,8 +1397,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   #### TE Huawei IP Plan Check ####
 
@@ -1298,8 +1430,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
  ############ Region 6&9 ##################
 
@@ -1353,8 +1488,11 @@ def showTcodeTables(request):
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
 
             
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   ### Kohkiloye Va boyer Ahmad New ###
     elif Province == 'Kohgiluyeh-new' :
         sheet_names = ['Yasouj New POA']
@@ -1381,8 +1519,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   #### Bushehr DPs  ####
     elif Province == 'Bushehr' :
         sheet_names = ['Bushehr OLD clusters' , 'Bushehr TDD',' Bushehr New PAO', 'Bushsher New DP']
@@ -1409,8 +1550,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+2,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   ### Fars OLD ###
 
@@ -1473,8 +1617,11 @@ def showTcodeTables(request):
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
             final_df4.reset_index(inplace=True)
             final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   ### Fars DPs ###
     elif Province == 'Fars-DPs' :
         sheet_names = ['Fars new PAO' , 'Fars New DP','Fars Ericsson DP']
@@ -1501,8 +1648,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
   ### Ahwaz OLD ###
 
@@ -1565,8 +1715,11 @@ def showTcodeTables(request):
             final_df [['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']] = final_df3[['LTE IP Address', 'LTE VLAN ID','LTE  O&M IP Address','LTE O&M VLAN ID']]
             final_df4.reset_index(inplace=True)
             final_df [['Sites-TDD',	'DCN','LTE 2600','LTE 2600 O&M' ,'LTE 3500' ,'LTE 3500 O&M']] = final_df4[['Sites','DCN', 'LTE 2600','LTE 2600 O&M','LTE 3500', 'LTE 3500 O&M']]
-            return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
   ### Ahwaz DPs ###
     elif Province == 'Khuzestan-DPs' :
         sheet_names = ['Ahvaz New PAO' , 'Khozestan new DP','Ericsson Routers']
@@ -1593,8 +1746,11 @@ def showTcodeTables(request):
                     jj = df.iloc[[j,j+1,i]]
                 final_df = pandas.concat([final_df , jj],sort=False)  
             final_df.fillna("" , inplace=True)
-        return HttpResponse(final_df.to_html(index=False ,classes="responstable"))
-
+            table = final_df.to_html(index=False ,classes="responstable")
+            context = {
+            'table': table
+            }
+            return render(request, "Showtable.html" , context)
 
 # test IP Plan Check
     elif Province == 'test':
