@@ -19,9 +19,6 @@ def showTcodeTables(request):
     if x.isalpha() or len(x) < 4 :
         return render(request,"pagenotfound.html")
 
-
-
-
  ############ Region 5&10 #################
   ### Kerman-Nokia IP Plans Check ###
     elif Province == 'Kerman-Nokia' :     
@@ -32,7 +29,11 @@ def showTcodeTables(request):
         hf = oo.groupby(oo['Sites-TDD'].str.contains(x))   
     # For the sites that not exist in both LTE and TDD sections
         if len(list(gf)) == 1 and len(list(hf)) == 1:
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
     # for the sites which dont have TDD traffic and just have 2G traffic
         elif len(list(hf)) == 1 :
             cf = list(gf)[1][1]
@@ -102,7 +103,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -140,7 +145,11 @@ def showTcodeTables(request):
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -202,7 +211,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -234,7 +247,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -262,7 +279,11 @@ def showTcodeTables(request):
         hf = oo.groupby(oo['Sites-TDD'].str.contains(x))   
     # For the sites that not exist in both LTE and TDD sections
         if len(list(gf)) == 1 and len(list(hf)) == 1:
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
     # for the sites which dont have TDD traffic and just have 2G traffic
         elif len(list(hf)) == 1 :
             cf = list(gf)[1][1]
@@ -332,7 +353,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -364,7 +389,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -391,7 +420,11 @@ def showTcodeTables(request):
         hf = oo.groupby(oo['Sites-TDD'].str.contains(x))       
     # For the sites that not exist in both LTE and TDD sections
         if len(list(gf)) == 1 and len(list(hf)) == 1:
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
     # for the sites which dont have TDD traffic and just have 2G traffic
         elif len(list(hf)) == 1 :
             cf = list(gf)[1][1]
@@ -472,7 +505,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -506,7 +543,11 @@ def showTcodeTables(request):
             df = pandas.concat([df,oo],sort=False)
         gf = oo.groupby(oo['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1]
             final_df = pandas.DataFrame(data=None)
@@ -540,7 +581,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -574,7 +619,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -608,7 +657,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -642,7 +695,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -675,7 +732,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -710,7 +771,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     ##Check wheter the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -744,7 +809,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -776,7 +845,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -808,7 +881,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -840,7 +917,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -872,7 +953,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -904,7 +989,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -936,7 +1025,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -968,7 +1061,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1001,7 +1098,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 100 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1033,7 +1134,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1065,7 +1170,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1100,7 +1209,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1132,7 +1245,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1165,7 +1282,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check wheter the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1202,7 +1323,11 @@ def showTcodeTables(request):
         gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -1259,7 +1384,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1291,7 +1420,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1328,7 +1461,11 @@ def showTcodeTables(request):
         gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -1384,7 +1521,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1417,7 +1558,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1453,7 +1598,11 @@ def showTcodeTables(request):
         gf1 = oo1.groupby(oo1['Sites'].str.contains(x))
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -1506,7 +1655,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1537,7 +1690,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1574,7 +1731,11 @@ def showTcodeTables(request):
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -1635,7 +1796,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1672,7 +1837,11 @@ def showTcodeTables(request):
         gf2 = oo2.groupby(oo2['Sites'].str.contains(x))
         gf3 = oo3.groupby(oo3['Sites'].str.contains(x))
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf1 = list(gf)[1][1].index
             cf2 = list(gf1)[1][1].index
@@ -1733,7 +1902,11 @@ def showTcodeTables(request):
         gf = df.groupby(df['Sites'].str.contains(x))
     #Check whete the Site is Valid or not
         if len(list(gf)) == 1 :
-            return HttpResponse(" Site is not Valid!!!")
+            context = {
+            'Site' : x ,
+            'province' : Province
+                }
+            return render(request , "Sitenotfound.html", context)
         else:
             cf = list(gf)[1][1].index
             final_df = pandas.DataFrame(data=None)
@@ -1804,6 +1977,11 @@ def Loginpage(request):
 def SearchPage(request):
         return render(request,"SiteSearch.html")
     
+
+#Show Dashboard page
+def dashboard(request):
+        return render(request,"Dashboard.html")
+
 
 #check the user groups
 def is_in_multiple_groups(user):
