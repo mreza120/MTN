@@ -7,6 +7,7 @@ import os
 import numpy as np
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
+from netmiko import ConnectHandler
 
 ############################ Main Index for Ip plan shows ####################################
 @login_required
@@ -1243,7 +1244,7 @@ def showTcodeTables(request):
             df = pandas.concat([df,oo],ignore_index=True,sort=False)
 
         gf = df.groupby(df['Sites'].str.contains(x))
-    #Check whete the Site is Valid or not
+    #Check wheter the Site is Valid or not
         if len(list(gf)) == 1 :
             context = {
             'Site' : x ,
@@ -1267,6 +1268,7 @@ def showTcodeTables(request):
         'table': table
          }
         return render(request, "Showtable.html" , context)
+        # return HttpResponse("latest_file")
 
 
   #### Semnan IP Plan Check ####
@@ -1944,18 +1946,18 @@ def showTcodeTables(request):
 
 #Test Index
 def index3(request):
-    import pandas
-    list_sheetha = ['2G','3G']
-    df = pandas.DataFrame()
-    for i in list_sheetha:
-        oo = pandas.read_excel('D:\Python\IPPLAN2.xlsx',sheet_name=i)
-        df = pandas.concat([df,oo],sort=False)
+    # list_sheetha = ['2G','3G']
+    # df = pandas.DataFrame()
+    # for i in list_sheetha:
+    #     oo = pandas.read_excel('D:\Python\IPPLAN2.xlsx',sheet_name=i)
+    #     df = pandas.concat([df,oo],sort=False)
     return HttpResponse(df.to_html())
+   
 
 
 #1st Page HTML
 def Loginpage(request):
-    # next_url = request.GET.get('next') >
+    # next_url = request.GET.get('next')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -1964,13 +1966,13 @@ def Loginpage(request):
             # Successful login
             login(request, user)
             # return render(request, 'index4.html')
-            return HttpResponseRedirect("http://10.131.57.172/viewsites/query")
+            return HttpResponseRedirect("http://10.131.57.172/viewsites/Dashboard")
         else:
             # undefined user or wrong password
                 return render(request,"pagenotfound.html")
     else:
         context = {}
-    return render(request, "index3.html", context)
+    return render(request, "loginpage.html", context)
         
 
 #Show Tcode Search page
@@ -1979,8 +1981,143 @@ def SearchPage(request):
     
 
 #Show Dashboard page
+@login_required
 def dashboard(request):
-        return render(request,"Dashboard.html")
+        context = {
+            'username' : request.user.username ,
+            'email' : request.user.email
+            }
+        return render(request,"Dashboard.html",context)
+
+#check ping of Sites home
+def check_live_ip_home(request): 
+    return render(request,"Checkping.html") 
+
+
+
+#check ping of Sites result
+def check_live_ip_result(request): 
+    IP = request.POST.get('IP')
+    rep = os.system('ping ' + IP + r" -n 3")
+    if rep == 0:
+        message = "This IP is UP"
+    else:
+        message = "This IP is Down"
+    context ={
+        "message" : message
+    }
+    
+    return render(request,"checkping.html",context)
+
+# Check GW of one IP
+def check_router_GW(request): 
+    
+    if request.method == 'POST':
+        try:
+            IP2 = request.POST.get('IP')
+            router = {
+
+            'device_type' : 'cisco_ios',
+
+            'ip' : IP2,
+
+            'username' : 'mohammadreza.mahm',
+
+            'password' : 'mash@142',
+
+            }
+
+            net_connect = ConnectHandler(**router)
+            hostname = net_connect.find_prompt()
+            hostname = hostname.replace("[local]","")
+            hostname = "Router name is {0}".format(hostname)
+        except:
+            hostname = "This IP is not defined"
+        context = {
+            "message" : hostname
+
+        }
+        return render(request,"CheckGW.html",context)
+    else:
+        return render(request,"CheckGW.html")
+
+
+#Check ARP Entry    
+def CheckARP(request):
+    if request.method == 'POST':
+        GW = request.POST.get('GW')
+        Vlan = request.POST.get('Vlan')
+        VRF = request.POST.get('VRF_name')
+    
+        router = {
+
+        'device_type' : 'cisco_ios',
+
+        'ip' : GW,
+
+        'username' : 'mohammadreza.mahm',
+
+        'password' : 'mash@142',
+
+        }
+        try:
+                
+            net_connect = ConnectHandler(**router)
+            hostname = net_connect.find_prompt()
+            text1 = open(r'C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv' , 'w')
+            if hostname.endswith('>'):
+                command = "dis arp int vlan {}".format(Vlan)
+                net_connect.send_command("screen-length 0 temporary")
+                outputt = net_connect.send_command(command)
+                text1.write(outputt)
+                text1.close()
+                df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+" )
+                df = df[["IP" , "ADDRESS" ]]
+                df.columns = ["IP Address", "Mac Address"] 
+                df = df[df['IP Address'].str.contains("10.")]
+                table = df.to_html(index=False ,classes="responstable")
+            elif hostname.startswith("[local]"):
+                if VRF == "o&m" :
+                    command = "sh ip arp | inc {}".format(Vlan)
+                else:
+                    command = "context {} sh arp-cache | inc {}".format(VRF,Vlan)
+                net_connect.send_command("terminal length 0")
+                outputt = net_connect.send_command(command)
+                text1.write(outputt)
+                text1.close()
+                df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+")
+                df.columns = ["IP Address", "Mac Address" ,"1","2","3","4","5"]
+                df = df[["IP Address", "Mac Address"]]
+                table = df.to_html(index=False ,classes="responstable")
+
+            elif hostname.endswith('#'):
+                if VRF != "o&m" :
+                    command = "sh ip arp vrf {} vlan {}".format(VRF,Vlan)
+
+                else: 
+                    command = "sh ip arp vlan {}".format(Vlan)
+                net_connect.send_command("terminal length 0")
+                outputt = net_connect.send_command(command)
+                text1.write(outputt)
+                text1.close()
+                df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+")
+                df = df[["Address" , "(min)" ]]
+                df.columns = ["IP Address", "Mac Address"]
+                table = df.to_html(index=False ,classes="responstable")
+
+            context = {
+            'table': table
+            }
+            return render(request, "ShowtableARP.html" , context)
+        except:
+            context = {
+                "message" : "It Seems that Connection has Problem please contact with #NWG IP RAN planning"
+            }
+            return render(request, "connectionfailed.html" , context)
+    else:
+        return render(request,"CheckARP.html")
+
+        # return HttpResponse(GW , Vlan , VRF)
 
 
 #check the user groups
