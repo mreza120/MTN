@@ -8,6 +8,12 @@ import numpy as np
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from netmiko import ConnectHandler
+import openpyxl
+from io import StringIO
+from openpyxl.styles import Font, Fill
+from datetime import datetime
+from pathlib import Path, PureWindowsPath
+
 
 ############################ Main Index for Ip plan shows ####################################
 @login_required
@@ -23,7 +29,7 @@ def showTcodeTables(request):
  ############ Region 5&10 #################
   ### Kerman-Nokia IP Plans Check ###
     elif Province == 'Kerman-Nokia' :     
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Nokia-IPs')
         gf = oo.groupby(oo['Sites'].str.contains(x))
@@ -94,7 +100,7 @@ def showTcodeTables(request):
   #### Kerman-ZTE IP Plans Check ####
     elif Province == 'Kerman-ZTE' :
         sheet_names = ['ZTE-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Kerman\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -131,7 +137,7 @@ def showTcodeTables(request):
   ### Esfahan OLD ###
 
     elif Province == 'Isfahan-Old' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Esfahan (2G)')
         oo1 = pandas.read_excel(latest_file,sheet_name='Esfahan(3G)')
@@ -202,7 +208,7 @@ def showTcodeTables(request):
   #### Esfahan DPs  ####
     elif Province == 'Isfahan-DPs' :
         sheet_names = ['Esfahan NEW PAO' , 'Ericsson Routers','Esfahan New DP']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Esfahan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -238,7 +244,7 @@ def showTcodeTables(request):
   #### Hormozgan  ####
     elif Province == 'Hormozgan' :
         sheet_names = ['BandarAbbas-Old clusters' , 'B.Abbas New LTE','Bandar Abbas New POA' , 'Bandar Abbas U900' , 'Bandar Abbas New DP']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Hormozgan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Hormozgan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -273,7 +279,7 @@ def showTcodeTables(request):
 
   ### Yazd-Nokia IP Plans check ###
     elif Province == 'Yazd-Nokia' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Nokia-IPs')
         gf = oo.groupby(oo['Sites'].str.contains(x))
@@ -344,7 +350,7 @@ def showTcodeTables(request):
   #### Yazd-ZTE IP Plans Check ####
     elif Province == 'Yazd-ZTE' :
         sheet_names = ['ZTE-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Yazd\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -380,7 +386,7 @@ def showTcodeTables(request):
   ### Shahrekord ###
     elif Province == 'Chahar-Mahaal' :
         sheet_names = ['Shahrekord OLD' , 'Shahrekord NEW PAO']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Chahar Mahal Bakhtiari\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Chahar Mahal Bakhtiari\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -414,7 +420,7 @@ def showTcodeTables(request):
             return render(request, "Showtable.html" , context)
   ### Sistan-Nokia IP Plans check ###    
     elif Province == 'Sistan-Nokia' :     
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Nokia-IPs')
         gf = oo.groupby(oo['Sites'].str.contains(x))
@@ -496,7 +502,7 @@ def showTcodeTables(request):
   #### Sistan-ZTE IP Plans Check ####
     elif Province == 'Sistan-ZTE' :
         sheet_names = ['ZTE-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 5&10\Sistan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -535,7 +541,7 @@ def showTcodeTables(request):
   #### Gilan IP Plan Check ####
     elif Province == 'Gilan' :
         sheet_names = ['Gilan-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Gilan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Gilan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -571,7 +577,7 @@ def showTcodeTables(request):
   #### Golestan IP Plan Check ####
     elif Province == 'Golestan' :
         sheet_names = ['Golestan-IP-Plan', 'Golestan-IP-Plan-DPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Golestan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Golestan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -609,7 +615,7 @@ def showTcodeTables(request):
   #### South-Khorasan IP Plan Check ####
     elif Province == 'South-Khorasan' :
         sheet_names = ['Birjand-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Jonoubi\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Kh. Jonoubi\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -647,7 +653,7 @@ def showTcodeTables(request):
   #### Khorasan-Razavi IP Plan Check ####
     elif Province == 'Khorasan-Razavi' :
         sheet_names = ['Razavi-IP', 'Razavi-DP-IP']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Razavi\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Kh. Razavi\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -685,7 +691,7 @@ def showTcodeTables(request):
   #### North-Khorasan IP Plan Check ####
     elif Province == 'North-Khorasan' :
         sheet_names = ['Bojnourd-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Kh. Shomali\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Kh. Shomali\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -722,7 +728,7 @@ def showTcodeTables(request):
   #### Mazandaran IP Plan Check ####
     elif Province == 'Mazandaran' :
         sheet_names = ['Mazandaran-IP-Plan', 'Mazandaran-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 1&3\Mazandaran\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 1&3\Mazandaran\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -761,7 +767,7 @@ def showTcodeTables(request):
   #### Ardebil IP Plan Check ####
     elif Province == 'Ardabil' :
         sheet_names = ['Ardebil-IP-Plan' , 'Ardebil-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ardebil\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Ardebil\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         
@@ -800,7 +806,7 @@ def showTcodeTables(request):
   #### East-Azarbayejan IP Plan Check ####
     elif Province == 'East-Azarbayejan' :
         sheet_names = ['Tabriz-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\E.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\E.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -836,7 +842,7 @@ def showTcodeTables(request):
   #### Hamedan IP Plan Check ####
     elif Province == 'Hamadan' :
         sheet_names = ['Hamedan-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Hamedan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Hamedan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -872,7 +878,7 @@ def showTcodeTables(request):
   #### Ilam IP Plan Check ####
     elif Province == 'Ilam' :
         sheet_names = ['Ilam-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Ilam\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Ilam\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -908,7 +914,7 @@ def showTcodeTables(request):
   #### Kermanshah IP Plan Check ####
     elif Province == 'Kermanshah' :
         sheet_names = ['Kermanshah-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -944,7 +950,7 @@ def showTcodeTables(request):
   #### Kermanshah IP Plan Check ####
     elif Province == 'Kermanshah' :
         sheet_names = ['Kermanshah-IP-Plan']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Kermanshah\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -980,7 +986,7 @@ def showTcodeTables(request):
   #### Kordestan IP Plan Check ####
     elif Province == 'Kurdistan' :
         sheet_names = ['Sanandaj-IPs', 'Sanandaj-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Kordestan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Kordestan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1016,7 +1022,7 @@ def showTcodeTables(request):
   #### Lorestan IP Plan Check ####
     elif Province == 'Lorestan' :
         sheet_names = ['KhorramAbad-IPs', 'KhorramAbad-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Lorestan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Lorestan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1052,7 +1058,7 @@ def showTcodeTables(request):
   #### Markazi IP Plan Check ####
     elif Province == 'Markazi' :
         sheet_names = ['Arak-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Markazi\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Markazi\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1089,7 +1095,7 @@ def showTcodeTables(request):
   #### Qazvin IP Plan Check ####
     elif Province == 'Qazvin' :
         sheet_names = ['Qazvin-IPs', 'Qazvin-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Qazvin\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Qazvin\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1125,7 +1131,7 @@ def showTcodeTables(request):
   #### West_azarbayejan IP Plan Check ####
     elif Province == 'West-Azarbayejan' :
         sheet_names = ['Oroumieh-IPs', 'Oroumieh-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\W.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\W.Azarbaiejan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1161,7 +1167,7 @@ def showTcodeTables(request):
   #### Zanjan IP Plan Check ####
     elif Province == 'Zanjan' :
         sheet_names = ['Zanjan-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 2&4\Zanjan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 2&4\Zanjan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1200,7 +1206,7 @@ def showTcodeTables(request):
   #### Qom IP Plan Check ####
     elif Province == 'Qom' :
         sheet_names = ['Qom-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Qom\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Qom\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1236,7 +1242,7 @@ def showTcodeTables(request):
   #### Karaj IP Plan Check ####
     elif Province == 'Alborz' :
         sheet_names = ['Alborz-IPs', 'Alborz-DP-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Karaj\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Karaj\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1274,7 +1280,7 @@ def showTcodeTables(request):
   #### Semnan IP Plan Check ####
     elif Province == 'Semnan' :
         sheet_names = ['Semnan-IPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Semnan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Semnan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1310,7 +1316,7 @@ def showTcodeTables(request):
   #### TE-OLD IP Plan Check ####
  
     elif Province == 'TE-Ericsson-OLD' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         xls = pandas.ExcelFile(latest_file)
         oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TE')
@@ -1376,7 +1382,7 @@ def showTcodeTables(request):
 
     elif Province == 'TE-Huawei' :
         sheet_names = ['Huawei-TE-DP' , 'TE-Sub']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1412,7 +1418,7 @@ def showTcodeTables(request):
   #### TE DPs IP Plan Check ####
     elif Province == 'TE-DPs' :
         sheet_names = ['TE-DP' , 'TE Ericsson DPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-East\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1448,7 +1454,7 @@ def showTcodeTables(request):
   #### TW-OLD IP Plan Check ####
  
     elif Province == 'TW-Ericsson-OLD' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         xls = pandas.ExcelFile(latest_file)
         oo = pandas.read_excel(xls,sheet_name='RBS TCU Abis-O&M TW')
@@ -1513,7 +1519,7 @@ def showTcodeTables(request):
   #### TW DPs IP Plan Check ####
     elif Province == 'TW-DPs' :
         sheet_names = ['TW-DP' , 'TW Ericsson DPs']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1550,7 +1556,7 @@ def showTcodeTables(request):
 
     elif Province == 'TW-Huawei' :
         sheet_names = ['Tehran-West (Huawei)']
-        list_of_files = glob.glob('Z:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 7&8\Tehran-West\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1588,7 +1594,7 @@ def showTcodeTables(request):
   ### Kohkiloye Va boyer Ahmad OLD ###
 
     elif Province == 'Kohgiluyeh-Old' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Yasouj (2G)')
         oo1 = pandas.read_excel(latest_file,sheet_name='Yasouj(3G)')
@@ -1647,7 +1653,7 @@ def showTcodeTables(request):
   ### Kohkiloye Va boyer Ahmad New ###
     elif Province == 'Kohgiluyeh-new' :
         sheet_names = ['Yasouj New POA']
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Kohkiloye Va boyer Ahmad\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1682,7 +1688,7 @@ def showTcodeTables(request):
   #### Bushehr DPs  ####
     elif Province == 'Bushehr' :
         sheet_names = ['Bushehr OLD clusters' , 'Bushehr TDD',' Bushehr New PAO', 'Bushsher New DP']
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Bushehr\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Bushehr\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1718,7 +1724,7 @@ def showTcodeTables(request):
   ### Fars OLD ###
 
     elif Province == 'Fars-Old' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Fars 2G')
         oo1 = pandas.read_excel(latest_file,sheet_name='Fars(3G)')
@@ -1788,7 +1794,7 @@ def showTcodeTables(request):
   ### Fars DPs ###
     elif Province == 'Fars-DPs' :
         sheet_names = ['Fars new PAO' , 'Fars New DP','Fars Ericsson DP']
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Fars\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1824,7 +1830,7 @@ def showTcodeTables(request):
   ### Ahwaz OLD ###
 
     elif Province == 'Khuzestan-OLD' :
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         oo = pandas.read_excel(latest_file,sheet_name='Khozestan 2G')
         oo1 = pandas.read_excel(latest_file,sheet_name='Khozestan(3G)')
@@ -1894,7 +1900,7 @@ def showTcodeTables(request):
   ### Ahwaz DPs ###
     elif Province == 'Khuzestan-DPs' :
         sheet_names = ['Ahvaz New PAO' , 'Khozestan new DP','Ericsson Routers']
-        list_of_files = glob.glob('Z:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
+        list_of_files = glob.glob('Y:\IP Plans\Region 6&9\Khuzestan\*.xlsx') # * means all if need specific format then *.csv
         latest_file = max(list_of_files, key=os.path.getmtime)
         df = pandas.DataFrame()
         for sheet in sheet_names:
@@ -1927,6 +1933,7 @@ def showTcodeTables(request):
             }
             return render(request, "Showtable.html" , context)
 
+
 # test IP Plan Check
     elif Province == 'test':
 
@@ -1951,7 +1958,8 @@ def index3(request):
     # for i in list_sheetha:
     #     oo = pandas.read_excel('D:\Python\IPPLAN2.xlsx',sheet_name=i)
     #     df = pandas.concat([df,oo],sort=False)
-    return HttpResponse(df.to_html())
+    # return HttpResponse(df.to_html())
+    return render(request, "CheckARPcluster.html")
    
 
 
@@ -1969,7 +1977,7 @@ def Loginpage(request):
             return HttpResponseRedirect("http://10.131.57.172/viewsites/Dashboard")
         else:
             # undefined user or wrong password
-                return render(request,"pagenotfound.html")
+                return render(request,"UserPasswrong.html")
     else:
         context = {}
     return render(request, "loginpage.html", context)
@@ -2061,11 +2069,10 @@ def CheckARP(request):
 
         }
         try:
-                
             net_connect = ConnectHandler(**router)
             hostname = net_connect.find_prompt()
             text1 = open(r'C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv' , 'w')
-            if hostname.endswith('>'):
+            if hostname.endswith('>'): # If Router is Huawei
                 command = "dis arp int vlan {}".format(Vlan)
                 net_connect.send_command("screen-length 0 temporary")
                 outputt = net_connect.send_command(command)
@@ -2074,23 +2081,19 @@ def CheckARP(request):
                 df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+" )
                 df = df[["IP" , "ADDRESS" ]]
                 df.columns = ["IP Address", "Mac Address"] 
-                df = df[df['IP Address'].str.contains("10.")]
+                df = df[df['IP Address'].str.contains("10\.")]
                 table = df.to_html(index=False ,classes="responstable")
-            elif hostname.startswith("[local]"):
-                if VRF == "o&m" :
-                    command = "sh ip arp | inc {}".format(Vlan)
-                else:
-                    command = "context {} sh arp-cache | inc {}".format(VRF,Vlan)
+            elif hostname.startswith("[local]"): # If Router is Ericsson
+                command = "sh arp-cache all-context | inc {}".format(Vlan)
                 net_connect.send_command("terminal length 0")
                 outputt = net_connect.send_command(command)
                 text1.write(outputt)
                 text1.close()
-                df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+")
-                df.columns = ["IP Address", "Mac Address" ,"1","2","3","4","5"]
+                df = pandas.read_csv(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\Temp Files\Text1.csv", delimiter="\s+",names=["IP Address", "Mac Address" ,"1","2","3","4","5"])
                 df = df[["IP Address", "Mac Address"]]
                 table = df.to_html(index=False ,classes="responstable")
 
-            elif hostname.endswith('#'):
+            elif hostname.endswith('#'): # If Router is Cisco
                 if VRF != "o&m" :
                     command = "sh ip arp vrf {} vlan {}".format(VRF,Vlan)
 
@@ -2118,6 +2121,188 @@ def CheckARP(request):
         return render(request,"CheckARP.html")
 
         # return HttpResponse(GW , Vlan , VRF)
+
+#Cluster Cleanup
+def ClusterCleanup(request):
+    list_of_files = glob.glob('X:\*.xlsx') # * means all if need specific format then *.csv
+    latest_file = max(list_of_files, key=os.path.getmtime)
+    if request.method == 'POST':
+        Clustertype = request.POST.get('clustertype')
+        GW = request.POST.get('GW')
+        df = pandas.read_excel(latest_file)
+        wb = openpyxl.load_workbook(latest_file)
+        sheet = wb["Sheet1"]
+        try: 
+            
+            router = {
+
+                    'device_type' : 'cisco_ios',
+
+                    'ip' : str(GW) ,
+
+                    'username' : 'mohammadreza.mahm',
+
+                    'password' : 'mash@142',
+
+                    }
+            net_connect = ConnectHandler(**router)
+            hostname = net_connect.find_prompt()
+        except : 
+            print("Can not connect to router")
+  
+            
+        soton_dict = {
+            1 : "B" ,
+            2 : "C" ,
+            3 : "D" ,
+            4 : "E" ,
+            5 : "F" ,
+            6 : "G" ,
+            7 : "H" ,
+            8 : "I" ,
+            9 : "J" ,
+            10 : "K" ,
+            11 : "L" ,
+            12 : "M" ,
+            13 : "N" ,
+            14 : "O" ,
+            15 : "P" ,
+            16 : "Q" ,
+            17 : "R" ,
+            18 : "S" ,
+            19 : "T" ,
+            20 : "U" ,
+            }
+
+        if hostname.endswith('>'):      #Hu// Routers
+            for soton in range (1 , df.shape[1]):
+                coloumn = df.columns[soton]
+                command = "dis arp int vlan {0}".format(df.at[1 ,coloumn])
+                net_connect.send_command("screen-length 0 temporary")
+                try :
+                    outputt = net_connect.send_command(command)
+                    df2 = pandas.read_csv(StringIO(outputt) , delimiter="\s+" , names=["IP", "1","2","3","4","5","6","7","8","9"])
+                    df2 = df2[["IP"]]
+                    df2 = df2[df2['IP'].str.contains("10\.")]
+                    for k , j in df2.iterrows():
+                        try :
+                            location = df[df[coloumn]==j["IP"]].index.values
+                            cell = sheet[soton_dict[soton] + str(location[0]+2)]
+                            cell.font = Font(size=12 , bold=True , color="003366FF")
+                        except:
+                            continue
+                except :
+                    continue
+
+        elif hostname.startswith("[local]"):     #Er// Routers
+            for soton in range (1 , df.shape[1]):
+                coloumn = df.columns[soton]
+                command = "sh arp-cache all-context | inc {}".format(df.at[1 ,coloumn])
+                net_connect.send_command("terminal length 0")
+                try :
+                    outputt = net_connect.send_command(command)
+                    df2 = pandas.read_csv(StringIO(outputt), delimiter="\s+",names=["IP", "Mac Address" ,"1","2","3","4","5"])
+                    df2 = df2[["IP"]]
+                    df2 = df2[df2['IP'].str.contains("10\.")]
+                    for k , j in df2.iterrows():
+                        try :
+
+                            location = df[df[coloumn]==j["IP"]].index.values
+                            cell = sheet[soton_dict[soton] + str(location[0]+2)]
+                            cell.font = Font(size=12 , bold=True , color="003366FF")
+                        except:
+                            continue
+                except :
+                    continue
+
+
+
+        else:   #Cisco Routers
+
+            for soton in range (1 , df.shape[1]):
+                coloumn = df.columns[soton]
+
+                if coloumn == "Abis":
+                    if Clustertype == "Ericsson":
+                        command = "sh arp vrf vpn_eabis | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Huawei":
+                        command = "sh arp vrf vpn_habis | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "ZTE":
+                        command = "sh arp vrf vpn_zabis | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Nokia":
+                        command = "sh arp vrf vpn_ziub | inc {}".format(df.at[1 ,coloumn])
+
+                elif coloumn == " 2600 LTE" :
+                    command = "sh arp vrf vpn_lte | inc {}".format(df.at[1 ,coloumn])
+                elif coloumn ==" 3500 LTE" :
+                    command = "sh arp vrf vpn_lte | inc {}".format(df.at[1 ,coloumn])
+                elif coloumn == "LTE" :
+                    command = "sh arp vrf vpn_lte | inc {}".format(df.at[1 ,coloumn])
+                elif coloumn  == "SYNCE" :
+                    if Clustertype == "Ericsson":   
+                        command = "sh arp vrf vpn_eiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Huawei":
+                        command = "sh arp vrf vpn_hiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "ZTE":
+                        command = "sh arp vrf vpn_ziub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Nokia":
+                        command = "sh arp vrf vpn_niub | inc {}".format(df.at[1 ,coloumn])
+                elif coloumn  == "Iub" :
+                    if Clustertype == "Ericsson":  
+                        command = "sh arp vrf vpn_eiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Huawei":
+                        command = "sh arp vrf vpn_hiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "ZTE":
+                        command = "sh arp vrf vpn_ziub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Nokia":
+                        command = "sh arp vrf vpn_niub | inc {}".format(df.at[1 ,coloumn])
+                elif coloumn  == "U900":
+                    if Clustertype == "Ericsson":  
+                        command = "sh arp vrf vpn_eiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Huawei":
+                        command = "sh arp vrf vpn_hiub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "ZTE":
+                        command = "sh arp vrf vpn_ziub | inc {}".format(df.at[1 ,coloumn])
+                    if Clustertype == "Nokia":
+                        command = "sh arp vrf vpn_niub | inc {}".format(df.at[1 ,coloumn])
+                else :
+                    command = "sh arp | inc {}".format(df.at[1 ,coloumn])
+                
+                net_connect.send_command("terminal length 0")
+                try :
+                    outputt = net_connect.send_command(command)
+                    df2 = pandas.read_csv(StringIO(outputt), delimiter="\s+" , names=["1","IP","2","3","4","5"])
+                    df2 = df2[["IP"]]
+                    df2 = df2[df2["IP"].str.contains("10\.")]
+                    for k , j in df2.iterrows():
+                        try :
+                            location = df[df[coloumn]==j["IP"]].index.values
+                            cell = sheet[soton_dict[soton] + str(location[0]+2)]
+                            cell.font = Font(size=12 , bold=True , color="003366FF")
+                        except : 
+                            continue
+                except :
+                    continue
+
+
+        day = datetime.strftime(datetime.now(), '%Y_%m_%d')
+        hour = datetime.strftime(datetime.now(), '%H_%M_%p')
+        wb.save(r'C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\viewsites\static\viewsites\ARPResult\Result({0})({1}).xlsx'.format(day,hour))
+        list_of_files = glob.glob(r"C:\Users\mohammadreza.mahm\Desktop\WebSite\mysite\viewsites\static\viewsites\ARPResult\*.xlsx") # * means all if need specific format then *.csv
+        latest_file = max(list_of_files, key=os.path.getmtime)
+        filename = os.path.basename(latest_file)
+        context = {
+
+            "Name" : filename
+        }
+        return render(request, "CheckARPclusterResult.html", context)
+    
+    else:
+        return render(request, "CheckARPcluster.html")
+
+
+
+
 
 
 #check the user groups
